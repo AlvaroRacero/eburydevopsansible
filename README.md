@@ -21,8 +21,9 @@ Create an ansible playbook that automatically deploy the following architecture 
 1. Install Ansible 2.1 or higher and Ansible-playbook.
 2. Clone EBURY DEVOPS ANSIBLE proyect.
 3. Move to the working directory.
-4. Put your aws credentials on ansible_test/vars/aws-creds.yml or add it to PATH.
-5. Run: 
+4. Set your aws credentials on ansible_test/vars/aws-creds.yml or add it to PATH.
+5. Set your bitbucket credentials on ansible_test/vars/git-creds.yml, variable gitpassword.
+6. Run: 
 
 To provision:
 ```sh
