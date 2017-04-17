@@ -4,7 +4,7 @@ image_id: ami-402f1a33 # Debian 8.7 Jessie (user admin)
 ec2_user: admin
 instance_type: t2.micro  # AWS instance type
 keyname: keypair
-num_instances: 1
+num_instances: 2
 ansible_ssh_private_key_file: ~/.ssh/keypair.pem
 group_web: webserver
 sg_web: sg80All

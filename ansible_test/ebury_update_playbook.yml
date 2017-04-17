@@ -1,4 +1,4 @@
-- name: Configure the webservers
+- name: Get the webservers
   hosts: localhost
   remote_user: "{{ ec2_user }}"
   gather_facts: True
@@ -10,7 +10,7 @@
   roles:
     - get_instances
 
-- name: Configure the webservers
+- name: Update proyect and requirements
   hosts: launched
   remote_user: "{{ ec2_user }}"
   become: True
@@ -23,6 +23,9 @@
 
   roles:
     - clone_proyect_w_req
+
+  handlers:
+    - include: 'handlers/nginx.yml'
 
   tasks:
     - name: Restart Supervisor

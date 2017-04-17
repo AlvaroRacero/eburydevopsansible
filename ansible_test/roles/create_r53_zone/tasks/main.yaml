@@ -1,6 +1,6 @@
 - name: Create Route53 Hosted zone
-route53_zone:
-  zone: "{{ domain }}"
-  state: present
-  aws_access_key: "{{ access_key }}"
-  aws_secret_key: "{{ secret_key }}"
+  route53_zone:
+    zone: "{{ domain }}"
+    state: present
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"

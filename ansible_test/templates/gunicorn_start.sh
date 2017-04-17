@@ -2,7 +2,7 @@
 
 NAME="hello_world"                                # Name of the application
 SOCKFILE=/var/www/hello_world/run/gunicorn.sock   # we will communicte using this unix socket
-USER=gunicorn                                        # the user to run as
+USER=gunicorn                                     # the user to run as
 GROUP=webapps                                     # the group to run as
 NUM_WORKERS=3                                     # how many worker processes should Gunicorn spawn
 DJANGO_SETTINGS_MODULE=hello.settings             # which settings file should Django use

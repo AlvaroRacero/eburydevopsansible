@@ -32,7 +32,7 @@
   handlers:
     - include: 'handlers/nginx.yml'
 
-- name: spin up the load balancer and add the servers to it
+- name: Spin up load balancer and add the servers
   hosts: localhost
   connection: local
 
