@@ -21,6 +21,7 @@
   vars_files:
     - vars/aws-creds.yml
     - vars/def_vars.yml
+    - vars/git-creds.yml
 
   roles:
     - create_user_and_group
@@ -53,5 +54,3 @@
   roles:
     - create_r53_zone
     - update_route53_elb
-
-
