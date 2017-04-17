@@ -1,0 +1,45 @@
+- name: Configure the webservers
+  hosts: localhost
+  remote_user: "{{ ec2_user }}"
+  gather_facts: True
+
+  vars_files:
+    - vars/aws-creds.yml
+    - vars/def_vars.yml
+
+  roles:
+    - get_instances
+
+- name: Configure the webservers
+  hosts: launched
+  remote_user: "{{ ec2_user }}"
+  become: True
+  gather_facts: True
+
+  vars_files:
+    - vars/aws-creds.yml
+    - vars/def_vars.yml
+
+  handlers:
+    - include: 'handlers/nginx.yml'
+
+  tasks:
+    - name: Clean previous proyect
+      file:
+        state: absent
+        path: "{{ path_web }}/app/"
+
+    - name: Deploy site files from Git repository
+      git: 
+        repo: "https://koli91:{{ gitpassword }}@bitbucket.org/koli91/hello_world.git"
+        dest: "{{ path_web }}/app/"
+
+    - name: Install requirements
+      pip:
+        requirements: "{{ path_web }}/app/requirements.txt"
+      tags: packages
+
+    - name: Restart Supervisor
+      supervisorctl: name={{ application_name }} state=restarted
+      notify:
+      - restart nginx

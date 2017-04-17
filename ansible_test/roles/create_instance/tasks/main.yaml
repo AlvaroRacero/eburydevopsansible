@@ -1,0 +1,30 @@
+- name: Provision instances
+  ec2:
+    aws_access_key: "{{access_key}}"
+    aws_secret_key: "{{secret_key}}"
+    key_name: "{{ keyname }}"
+    group: "{{ sg_ssh }}"
+    instance_type: "{{ instance_type }}"
+    image: "{{ image_id }}"
+    wait: true
+    region: "{{ region }}"
+    exact_count: "{{ num_instances }}"
+    count_tag:
+      Name: "{{ group_web }}"
+    instance_tags:
+      Name: "{{ group_web }}"
+  register: webserver
+
+- name: Add new instance to host group
+  add_host:
+    hostname: "{{ item.public_ip }}"
+    groupname: launched
+  with_items: "{{ webserver.tagged_instances }}"
+
+- name: wait for the servers to appear on the network
+  wait_for: host={{ item.public_dns_name }} port=22 delay=10 timeout=180 state=started
+  with_items: "{{ webserver.instances }}"
+
+- name: accept new ssh fingerprints
+  shell: ssh-keyscan -H {{ item.public_ip }} >> ~/.ssh/known_hosts
+  with_items: "{{ webserver.instances }}"

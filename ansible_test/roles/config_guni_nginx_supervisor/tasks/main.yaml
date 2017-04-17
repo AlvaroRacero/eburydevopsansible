@@ -1,0 +1,69 @@
+- name: Clean default nginx site
+  file:
+    state: absent
+    path: /etc/nginx/sites-enabled/default
+
+- name: Create the Nginx site
+  template: src=nginx.conf
+            dest=/etc/nginx/sites-available/hello.conf
+            owner={{ gunicorn_user }}
+            group={{ gunicorn_group }}
+            mode=0755
+            backup=yes
+  tags: deploy
+
+- name: Create the application bin folder
+  file: path=/var/www/hello_world/bin/
+        owner={{ gunicorn_user }}
+        group={{ gunicorn_group }}
+        mode=0774
+        state=directory
+
+- name: Symlink Nginx site
+  file:
+    src: /etc/nginx/sites-available/hello.conf
+    dest: /etc/nginx/sites-enabled/hello.conf
+    state: link
+
+- name: Create the Gunicorn script file
+  template: src=gunicorn_start.sh
+            dest={{ path_web }}bin/gunicorn_start
+            owner={{ gunicorn_user }}
+            group={{ gunicorn_group }}
+            mode=0755
+            backup=yes
+  tags: deploy
+
+- name: Create the application log folder
+  file: path=/var/www/hello_world/logs/
+        owner={{ gunicorn_user }}
+        group={{ gunicorn_group }}
+        mode=0774
+        state=directory
+
+- name: Create the application socket folder
+  file: path=/var/www/hello_world/run/
+        owner={{ gunicorn_user }}
+        group={{ gunicorn_group }}
+        mode=0777
+        state=directory
+
+- name: Create the application log file
+  file: path=/var/www/hello_world/logs/gunicorn_supervisor.log
+        owner={{ gunicorn_user }}
+        group={{ gunicorn_group }}
+        mode=0664
+        state=touch
+
+- name: Create the Supervisor config file
+  template: src=hello.conf
+            dest=/etc/supervisor/conf.d/{{ application_name }}.conf
+            backup=yes
+
+- name: Re-read the Supervisor config files
+  supervisorctl: name={{ application_name }} state=present
+
+- name: Restart Supervisor
+  supervisorctl: name={{ application_name }} state=restarted
+  notify:
+  - restart nginx

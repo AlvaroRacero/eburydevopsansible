@@ -1,0 +1,57 @@
+---
+
+- name: Provision EC2 instance
+  hosts: localhost
+
+  vars_files:
+    - vars/aws-creds.yml
+    - vars/def_vars.yml
+
+  roles:
+    - keypair
+    - security_group
+    - create_instance
+
+- name: Configure the webservers
+  hosts: launched
+  remote_user: "{{ ec2_user }}"
+  become: True
+  gather_facts: True
+
+  vars_files:
+    - vars/aws-creds.yml
+    - vars/def_vars.yml
+
+  roles:
+    - create_user_and_group
+    - install_dependencies
+    - clone_proyect_w_req
+    - config_guni_nginx_supervisor
+
+  handlers:
+    - include: 'handlers/nginx.yml'
+
+- name: spin up the load balancer and add the servers to it
+  hosts: localhost
+  connection: local
+
+  vars_files:
+  - vars/aws-creds.yml
+  - vars/def_vars.yml
+
+  roles:
+    - create_elb_add_host
+
+- name: Create Route53 zone and CNAME to domain
+  hosts: localhost
+  connection: local
+
+  vars_files:
+  - vars/aws-creds.yml
+  - vars/def_vars.yml
+
+  roles:
+    - create_r53_zone
+    - update_route53_elb
+
+

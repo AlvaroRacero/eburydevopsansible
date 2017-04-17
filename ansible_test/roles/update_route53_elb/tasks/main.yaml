@@ -1,0 +1,11 @@
+- name: Update Route53 Record for WWW
+  route53:
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    command: create
+    overwrite: yes
+    zone: "{{ domain }}"
+    record: "www.{{ domain }}"
+    type: CNAME
+    ttl: 60
+    value: "{{ awselb.elb.dns_name }}"

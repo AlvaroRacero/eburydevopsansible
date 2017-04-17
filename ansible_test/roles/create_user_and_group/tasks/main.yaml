@@ -1,0 +1,11 @@
+- name : Adding group {{ gunicorn_group }}
+  group:
+    name: "{{ gunicorn_group }}"
+    state: present
+
+- name: Adding user {{ gunicorn_user }}  
+  user: name={{ gunicorn_user }}
+        group={{ gunicorn_group }}
+        shell=/bin/false
+        groups=sudo
+        append=yes

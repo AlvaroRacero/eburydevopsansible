@@ -1,0 +1,7 @@
+- name: Installs Nginx, Git, Pip, Supervisor
+  apt: pkg={{item}} state=installed update_cache=true
+  with_items:
+    - nginx
+    - git
+    - python-pip
+    - supervisor

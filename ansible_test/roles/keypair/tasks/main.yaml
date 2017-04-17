@@ -1,0 +1,11 @@
+- name: create key pair 
+  ec2_key:
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+    name: "{{ keyname }}"
+  register: mykey
+
+- name: write to file
+  copy: content="{{ mykey.key.private_key }}" dest="~/.ssh/{{ keyname }}.pem" mode=0600
+  when: mykey.changed

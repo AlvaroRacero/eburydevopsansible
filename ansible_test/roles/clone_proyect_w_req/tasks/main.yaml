@@ -1,0 +1,9 @@
+- name: Deploy site files from Git repository
+  git: 
+    repo: "https://koli91:{{ gitpassword }}@bitbucket.org/koli91/hello_world.git"
+    dest: "{{ path_web }}/app/"
+
+- name: Install requirements
+  pip:
+    requirements: "{{ path_web }}/app/requirements.txt"
+  tags: packages

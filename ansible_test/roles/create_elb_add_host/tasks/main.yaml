@@ -1,0 +1,35 @@
+- name: setup a load balancer
+  ec2_elb_lb:
+    name: awselb
+    state: present
+    region: "{{ region }}"
+    security_group_names: "{{ sg_web }}"
+    zones:
+      - eu-west-1a
+      - eu-west-1b
+      - eu-west-1c
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    listeners:
+      - protocol: http
+        load_balancer_port: 80
+        instance_port: 80
+    health_check:
+      ping_protocol: tcp # options are http, https, ssl, tcp
+      ping_port: 80
+      response_timeout: 5 # seconds
+      interval: 10 # seconds     fast creation
+      unhealthy_threshold: 2
+      healthy_threshold: 2 # fast creation
+  register: awselb
+
+- name: add the webservers to the load balancer
+  local_action: ec2_elb
+  args:
+    instance_id: "{{ item.id }}"
+    ec2_elbs: awselb
+    state: present
+    region: "{{ region }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+  with_items: "{{ webserver.tagged_instances }}"
